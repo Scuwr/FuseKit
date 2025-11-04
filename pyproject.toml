@@ -15,17 +15,19 @@ dependencies = [
     "accelerate>=1.10.1",
     "anthropic>=0.72.0",
     "datasets>=4.0.0",
-    "fitz>=0.0.1.dev2",
+    "google-genai>=1.43.0",
     "numpy>=2.3.4",
     "openai>=2.6.1",
     "pandas>=2.3.3",
     "peft>=0.17.1",
     "Pillow>=12.0.0",
     "protobuf>=3.20.3",
+    "PyMuPDF>=1.25.5",
     "Requests>=2.32.5",
     "torch>=2.6.0",
     "tqdm>=4.67.1",
-    "transformers>=4.51.3",
+    "transformers==4.51.3",
+    "click>=8.3.0"
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -33,3 +35,6 @@ packages = ["src/fusekit"]
 
 [tool.hatch.build.targets.sdist]
 include = ["src/fusekit", "README.md", "LICENSE", "pyproject.toml"]
+
+[project.scripts]
+fusekit = "fusekit.core:cli"

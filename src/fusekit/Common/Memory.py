@@ -4,15 +4,22 @@ import math
 import gc
 from transformers import PreTrainedModel
 
-def clear_cuda():
+import subprocess
+import re
+import sys
+import time
+import warnings
+
+def clear_cuda(verbose=True):
     gc.collect()
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
         torch.cuda.ipc_collect()
 
-        print("GPU Memory Emptied")
-        print(f"Memory reserved: {torch.cuda.memory_reserved() / 1e6} MB")
-        print(f"Memory allocated: {torch.cuda.memory_allocated() / 1e6} MB")
+        if verbose:
+            print("GPU Memory Emptied")
+            print(f"Memory reserved: {torch.cuda.memory_reserved() / 1e6} MB")
+            print(f"Memory allocated: {torch.cuda.memory_allocated() / 1e6} MB")
     else:
         print("No GPU available. Memory not cleared.")
 
@@ -22,6 +29,65 @@ def print_memory_allocation():
     else:
         print("No GPU available. Memory allocation not printed.")
 
+def get_gpu_status():
+    try:
+        result = subprocess.run(
+            [
+                "nvidia-smi",
+                "--query-gpu=index,name,memory.total,memory.used,memory.free",
+                "--format=csv,noheader,nounits",
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=True,
+        )
+        gpus = []
+        for line in result.stdout.strip().split("\n"):
+            if not line.strip():
+                continue
+            idx, name, total, used, free = re.split(r",\s*", line)
+            gpus.append({
+                "index": int(idx),
+                "name": name,
+                "total_MB": math.floor(int(total) / 1024) * 1000,
+                "used_MB":  math.floor(int(used)  / 1024) * 1000,
+                "free_MB":  math.floor(int(free)  / 1024) * 1000,
+            })
+        return gpus
+    except Exception as e:
+        print(f"Failed to query nvidia-smi: {e}", file=sys.stderr)
+        return []
+
+def get_available_gpus(threshold=0.9, retries=1):
+    """
+    Returns (device_indices, memory_limit_MB)
+    - Retries if GPU detection returns None.
+    - Sleeps 1s between retries.
+    - Raises RuntimeError if no qualifying GPUs are found after all attempts
+    """
+    result = None
+
+    for attempt in range(retries + 1):
+        gpus = get_gpu_status()
+        if gpus is None:
+            # get_gpu_status itself failed; treat as empty list
+            gpus = []
+
+        last_seen = gpus
+        qualifying = [g for g in gpus if g["free_MB"] >= threshold * g["total_MB"]]
+        if qualifying:
+            memory_limit = min(qualifying, key=lambda g: g["free_MB"])["free_MB"]
+            devices = [g["index"] for g in qualifying]
+            return devices, memory_limit
+
+        if attempt < retries:
+            time.sleep(1)
+
+    raise RuntimeError(
+        f"No GPUs met the {int(threshold*100)}% free-memory threshold after {retries+1} attempt(s). " + \
+        f"Last observed GPUs: {[{'index': g.get('index'), 'free_MB': g.get('free_MB'), 'total_MB': g.get('total_MB')} for g in (last_seen or [])]}"
+    )
 
 class TensorDimensions:
     def __init__(self, shape: list):
@@ -105,8 +171,9 @@ class MemoryManager:
         self._logit_size = None
         self._pixel_size = None
 
-        print(f'Memory Required to Train: {self.trainable_param_mb()} MB')
-        print(f'Estimated Training Overhead Memory: {self.constant_overhead_mb()} MB')
+        print(f'Using {self.memory_limit} MB per GPU on {len(self.device_list)} GPUs')
+        print(f'Additional Memory Required to Train: {self.trainable_param_mb()} MB')
+        #print(f'Estimated Training Overhead Memory: {self.constant_overhead_mb()} MB')
 
     def get_cuda_assignment(self):
         self.device_assignments = {}

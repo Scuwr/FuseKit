@@ -11,9 +11,9 @@ class GenericLlavaNext(CausalModel):
                  model_path,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=None,
-                 force_sharding=False):
+                 force_sharding=True):
         processor: LlavaNextProcessor = LlavaNextProcessor.from_pretrained(model_path)
         self.config = config or LlavaNextConfig.from_pretrained(model_path)
         model = LlavaNextForConditionalGeneration.from_pretrained(
@@ -36,9 +36,9 @@ class LlavaNext_7b_Vicuna(GenericLlavaNext):
     def __init__(self,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=torch.bfloat16,
-                 force_sharding=False):
+                 force_sharding=True):
         
         super().__init__(env.ModelPath.llava_next_7b_vicuna,
                          config=config,
@@ -53,9 +53,9 @@ class LlavaNext_13b_Vicuna(GenericLlavaNext):
     def __init__(self,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=torch.bfloat16,
-                 force_sharding=False):
+                 force_sharding=True):
         
         super().__init__(env.ModelPath.llava_next_13b_vicuna,
                          config=config,
@@ -70,9 +70,9 @@ class LlavaNext_7b_Mistral(GenericLlavaNext):
     def __init__(self,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=torch.bfloat16,
-                 force_sharding=False):
+                 force_sharding=True):
         
         super().__init__(env.ModelPath.llava_next_7b_mistral,
                          config=config,
@@ -93,9 +93,9 @@ class LlavaNext_34b(GenericLlavaNext):
     def __init__(self,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=torch.bfloat16,
-                 force_sharding=False):
+                 force_sharding=True):
         
         super().__init__(env.ModelPath.llava_next_34b,
                          config=config,
@@ -110,9 +110,9 @@ class LlavaNext_72b(GenericLlavaNext):
     def __init__(self,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=torch.bfloat16,
-                 force_sharding=False):
+                 force_sharding=True):
         
         super().__init__(env.ModelPath.llava_next_72b,
                          config=config,
@@ -127,9 +127,9 @@ class LlavaNext_110b(GenericLlavaNext):
     def __init__(self,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=torch.bfloat16,
-                 force_sharding=False):
+                 force_sharding=True):
         
         super().__init__(env.ModelPath.llava_next_110b,
                          config=config,

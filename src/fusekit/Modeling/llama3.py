@@ -13,9 +13,9 @@ class GenericLlama3(CausalModel):
                  model_path,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=None,
-                 force_sharding=False):
+                 force_sharding=True):
         tokenizer: AutoTokenizer = AutoTokenizer.from_pretrained(model_path)
         #tokenizer.add_special_tokens({"pad_token":"<pad>"})
 
@@ -43,9 +43,9 @@ class Llama3_8b(GenericLlama3):
     def __init__(self,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=torch.bfloat16,
-                 force_sharding=False):
+                 force_sharding=True):
         
         super().__init__(env.ModelPath.llama3_8b,
                          config=config,
@@ -62,9 +62,9 @@ class GenericLlama3Vision(CausalModel):
                  model_path,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=None,
-                 force_sharding=False):
+                 force_sharding=True):
         processor: MllamaProcessor = MllamaProcessor.from_pretrained(model_path)
         self.config = config or MllamaConfig.from_pretrained(model_path)
         model = MllamaForConditionalGeneration.from_pretrained(
@@ -86,9 +86,9 @@ class Llama3_11b_vision_instruct(GenericLlama3Vision):
     def __init__(self,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=torch.bfloat16,
-                 force_sharding=False):
+                 force_sharding=True):
         
         super().__init__(env.ModelPath.llama3_11b_vision_instruct,
                          config=config,
@@ -103,9 +103,9 @@ class Llama3_90b_vision_instruct(GenericLlama3Vision):
     def __init__(self,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=torch.bfloat16,
-                 force_sharding=False):
+                 force_sharding=True):
         
         super().__init__(env.ModelPath.llama3_90b_vision_instruct,
                          config=config,

@@ -16,9 +16,9 @@ class GenericPhi3(CausalModel):
                  model_path,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=None,
-                 force_sharding=False):
+                 force_sharding=True):
         processor: AutoProcessor = AutoProcessor.from_pretrained(model_path, 
                                                                  num_crops=4, 
                                                                  trust_remote_code=True)
@@ -126,9 +126,9 @@ class Phi3p5_Vision(GenericPhi3):
     def __init__(self,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=torch.bfloat16,
-                 force_sharding=False):
+                 force_sharding=True):
         
         super().__init__(env.ModelPath.phi3_5_vision,
                          config=config,

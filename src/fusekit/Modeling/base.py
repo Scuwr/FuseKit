@@ -82,7 +82,6 @@ class CausalModelBase(PreTrainedModel, GenericModel):
         self.model = model
         self.processor = processor
         self.tokenizer = tokenizer
-        self.device_list = GenericModel.parse_device(device)
 
     def sanitize(self):
         pass
@@ -92,13 +91,6 @@ class CausalModelBase(PreTrainedModel, GenericModel):
 
     def save_model(self, checkpoint, save_path=None):
         checkpoint['parameters'] = {k:v for k,v in self.model.named_parameters() if v.requires_grad}
-
-        # model_path = str(env.default_checkpoint_path)
-        # print(f"Saving to location: {model_path}")
-
-        # assert not os.path.exists(model_path), \
-        #     f'file already exists: {model_path}'
-        # torch.save(checkpoint, model_path)
 
         if save_path is not None:  # save to a different location
             save_path = Path(save_path)

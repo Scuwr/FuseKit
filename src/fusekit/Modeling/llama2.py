@@ -9,9 +9,9 @@ class GenericLlama2(CausalModel):
                  model_path,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=None,
-                 force_sharding=False):
+                 force_sharding=True):
         tokenizer: LlamaTokenizer = LlamaTokenizer.from_pretrained(model_path)
         tokenizer.add_special_tokens({"pad_token":"<pad>"})
 
@@ -46,9 +46,9 @@ class Llama2_7b(GenericLlama2):
     def __init__(self, 
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=torch.bfloat16,
-                 force_sharding=False):
+                 force_sharding=True):
         
         super().__init__(env.ModelPath.llama2_7b, 
                          config=config, 

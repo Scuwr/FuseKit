@@ -27,7 +27,7 @@ class TrainingMixin(CausalModelBase):
             target_modules=['q_proj', 'v_proj'],
         )
         self.sanitize()
-        self.model = get_peft_model(self.model, peft_config)
+        self.model = get_peft_model(self.model, peft_config) #, mixed=True)
         self.update()
         return self
 

@@ -12,9 +12,9 @@ class GenericPixtral(CausalModel):
                  model_path,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=None,
-                 force_sharding=False):
+                 force_sharding=True):
 
 
         processor = AutoProcessor.from_pretrained(model_path, trust_remote_code=True)
@@ -44,9 +44,9 @@ class Pixtral_12b(GenericPixtral):
     def __init__(self,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=torch.bfloat16,
-                 force_sharding=False):
+                 force_sharding=True):
         
         super().__init__(env.ModelPath.pixtral_12b,
                          config=config,

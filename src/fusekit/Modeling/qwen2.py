@@ -11,9 +11,9 @@ class GenericQwen2(CausalModel):
                  model_path,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=None,
-                 force_sharding=False):
+                 force_sharding=True):
         processor: Qwen2VLProcessor = Qwen2VLProcessor.from_pretrained(model_path)
         self.config = config or Qwen2VLConfig.from_pretrained(model_path)
         model = Qwen2VLForConditionalGeneration.from_pretrained(
@@ -37,9 +37,9 @@ class Qwen2_2b(GenericQwen2):
     def __init__(self,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=torch.bfloat16,
-                 force_sharding=False):
+                 force_sharding=True):
         
         super().__init__(env.ModelPath.qwen2_2b,
                          config=config,
@@ -54,9 +54,9 @@ class Qwen2_7b(GenericQwen2):
     def __init__(self,
                  config=None,
                  device=None,
-                 memory_limit=0,
+                 memory_limit=None,
                  precision=torch.bfloat16,
-                 force_sharding=False):
+                 force_sharding=True):
         
         super().__init__(env.ModelPath.qwen2_7b,
                          config=config,

@@ -1,4 +1,4 @@
-import os, datetime
+import os, datetime, warnings
 import fusekit.Common.env as env
 
 import types
@@ -21,7 +21,7 @@ from .base import CausalModelBase, APIModelBase, GenericModel
 from fusekit.Datasets import IterableDataset, APICost, GenerationSample, TextVisionSample
 from fusekit.Common.EvalType import EvalType as EvalType
 from fusekit.Common.Batching import BatchSamples, DynamicBatchLoader
-from fusekit.Common.Memory import MemoryManager, print_memory_allocation
+from fusekit.Common.Memory import MemoryManager, print_memory_allocation, get_available_gpus, clear_cuda
 from fusekit.Modeling.model_hooks import InputsToHook, attach_hook, detach_hook
 
 from fusekit.Modeling.training import TrainingMixin
@@ -47,14 +47,24 @@ class CausalModel(TrainingMixin, CausalModelBase):
                  model: PreTrainedModel, 
                  processor: ProcessorMixin|None,
                  tokenizer: PreTrainedTokenizer,
-                 device: list[int]|int|None,
-                 memory_limit: int,
+                 device: list[int]|int=None,
+                 memory_limit: int=None,
                  vision_embed_size=0,
                  force_sharding=True,
                  batch_images=False):
         super().__init__(model, processor, tokenizer, device)
         if model.dtype in (torch.bfloat16,torch.float16):
             model.half()
+
+        clear_cuda(verbose=False)
+        available_devices, detected_memory_limit = get_available_gpus()
+        if device is None:
+            warnings.warn(f'Device not specified! Using detected available GPUs: {available_devices}', UserWarning)
+            device = available_devices
+
+        if memory_limit is None:
+            warnings.warn(f'memory_limit not specified! Use detected available memory: {detected_memory_limit} MB', UserWarning)
+            memory_limit = detected_memory_limit
             
         self.model_name = "CausalModel"
         self.vision_embed_size = vision_embed_size
@@ -62,6 +72,7 @@ class CausalModel(TrainingMixin, CausalModelBase):
         self.batch_images = batch_images
         self.device_args = device
         self.memory_limit = memory_limit
+        self.device_list = GenericModel.parse_device(device)
         self.device_map = None
         self.mm = self.update_memory(memory_limit, 
                                      force_sharding=self.shard_model)
@@ -75,7 +86,7 @@ class CausalModel(TrainingMixin, CausalModelBase):
         super().update()
         self.mm = self.update_memory(self.memory_limit, force_sharding=self.shard_model)
     
-    def update_memory(self, memory_limit, force_sharding=False):
+    def update_memory(self, memory_limit, force_sharding=True):
         if isinstance(self.model, torch.nn.DataParallel):
             print("Disabling DataParallel")
             self.model = self.model.module
@@ -84,13 +95,14 @@ class CausalModel(TrainingMixin, CausalModelBase):
                                 memory_limit=memory_limit, 
                                 vision_embed_size=self.vision_embed_size)
         self._use_sharding(force_sharding)
+        print()
         return self.mm
 
     def _use_sharding(self, force_sharding):
         assert self.mm is not None, 'self.mm has not been initialized.'\
             'Do not call update_model() before initializing MemoryManager'
         
-        print(f'Loaded model requires ' + 
+        print(f'Memory Required for Inference ' + 
             f'{self.mm.get_model_memory(entire_model=True):.2f} MB')
 
         # if isinstance(self.model, torch.nn.DataParallel):
@@ -99,7 +111,6 @@ class CausalModel(TrainingMixin, CausalModelBase):
         # else:
         #     print("Removing Sharding hooks")
         #     self.remove_hooks()
-
         if force_sharding \
             and len(self.device_list) > 1 \
                 or (self.mm.get_model_memory(entire_model=True) 
@@ -311,8 +322,10 @@ class CausalModel(TrainingMixin, CausalModelBase):
                 if getattr(cfg, k) != getattr(ref_cfg, k):
                     raise ValueError(f"Inconsistent {k}: {getattr(cfg, k)} != {getattr(ref_cfg, k)}")
 
-        # --- Wrap the base model in PeftModel ---
-        #self.model = get_peft_model(model, ref_cfg)
+        # base = self.model if isinstance(self.model, (PeftMixedModel)) else self.model
+        # first_name  = f"{self.adapter_name_prefix}0"
+        # first_path  = str(lora_checkpoints[0])
+        # mixed = PeftMixedModel.from_pretrained(base, first_path, adapter_name=first_name)
 
         adapter_names = []
         for i, path in enumerate(lora_checkpoints):
