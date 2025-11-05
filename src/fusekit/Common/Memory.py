@@ -17,9 +17,11 @@ def clear_cuda(verbose=True):
         torch.cuda.ipc_collect()
 
         if verbose:
+            print()
             print("GPU Memory Emptied")
             print(f"Memory reserved: {torch.cuda.memory_reserved() / 1e6} MB")
             print(f"Memory allocated: {torch.cuda.memory_allocated() / 1e6} MB")
+            print()
     else:
         print("No GPU available. Memory not cleared.")
 

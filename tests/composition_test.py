@@ -64,10 +64,11 @@ def composition_test(device=None, memory_limit=None):
 
     shutil.rmtree(adapter_path)
 
-print("Multi-GPU Test")
+Memory.clear_cuda()
+print("Composition Multi-GPU Test")
 composition_test()
 Memory.clear_cuda()
 device, memory_limit = Memory.get_available_gpus()
 
-print("Single GPU Test")
+print("Composition Single GPU Test")
 composition_test(device=device[0])

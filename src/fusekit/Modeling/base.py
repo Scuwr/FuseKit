@@ -33,12 +33,11 @@ class GenericModel(ABC):
             self.evaluate_dataset(dataset, llm_judge=llm_judge, save_file=save_file, skip_generation=skip_generation)
 
     def evaluate_dataset(self, dataset: IterableDataset, llm_judge=None, save_file=None, skip_generation=False):
-        os.makedirs(env.results / 'temp', exist_ok=True)
-
         self.evaluate_options(dataset, skip_generation, llm_judge)
 
         if save_file is not None:
             save_file = f'answerer_{self.model_name}_llmjudge_{llm_judge.model_name}_{len(dataset)}' + save_file if llm_judge is not None else save_file
+            os.makedirs(env.results / 'temp', exist_ok=True)
             self.save_dataset(dataset, save_file)
 
     def evaluate_options(self, dataset, skip_generation, llm_judge):

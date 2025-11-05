@@ -13,7 +13,7 @@ ROOT = Path(os.getenv("FUSEKIT_ROOT", DEFAULT_ROOT))
 APIKEYS_DIR = Path(os.getenv("FUSEKIT_APIKEYS", ROOT / "apikeys"))
 MODELS_DIR  = Path(os.getenv("FUSEKIT_MODELS",  ROOT / "models"))
 DATASETS_DIR = Path(os.getenv("FUSEKIT_DATASETS", ROOT / "datasets"))
-ARTIFACTS_DIR = Path(os.getenv("FUSEKIT_ARTIFACTS", ROOT / "artifacts"))
+ARTIFACTS_DIR = Path(os.getenv("FUSEKIT_ARTIFACTS", ROOT / "."))
 CONFIG_FILE  = Path(os.getenv("FUSEKIT_CONFIG", ROOT / "config.yml"))
 
 def needs_init() -> bool:

@@ -1,6 +1,6 @@
 set -Eeuo pipefail
 
-ENV_NAME="test-env"
+ENV_NAME="testpypi-env"
 PROJ_ROOT="/storage/cmarnold/projects"
 FUSEKIT="${PROJ_ROOT}/FuseKit"
 
@@ -22,7 +22,7 @@ conda create -n "${ENV_NAME}" python=3.11 pip -y
 conda activate "${ENV_NAME}"
 python -m pip install --upgrade pip
 pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cu126
-pip install --no-cache-dir -e /storage/cmarnold/projects/FuseKit/
+pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple fusekit==0.1.0a2
 
 cd "${FUSEKIT}/tests"
 ./python_tests.sh

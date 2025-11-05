@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fusekit"
-version = "0.1.0"
+version = "0.1.0a1"
 description = "Composable inference & GPU fusion engine (HF + PEFT)."
 readme = "README.md"
 license = { text = "Apache-2.0" }
@@ -14,6 +14,7 @@ authors = [{ name = "Christian Arnold", email = "cmarnold@mit.edu" }]
 dependencies = [
     "accelerate>=1.10.1",
     "anthropic>=0.72.0",
+    "click>=8.3.0",
     "datasets>=4.0.0",
     "google-genai>=1.43.0",
     "numpy>=2.3.4",
@@ -24,10 +25,10 @@ dependencies = [
     "protobuf>=3.20.3",
     "PyMuPDF>=1.25.5",
     "Requests>=2.32.5",
+    "sentencepiece>=0.2.1",
     "torch>=2.6.0",
     "tqdm>=4.67.1",
-    "transformers==4.51.3",
-    "click>=8.3.0"
+    "transformers==4.51.3",    
 ]
 
 [tool.hatch.build.targets.wheel]
