@@ -26,7 +26,7 @@ class APIModel(APIModelBase):
                                          rate_limit=rate_limit, 
                                          time_window=time_window)
         try:
-            self.tokenizer = AutoTokenizer.from_pretrained(env.ModelPath.llama3_11b_vision_instruct)
+            self.tokenizer = AutoTokenizer.from_pretrained(env.ModelPath.llama3_11b_vision)
             if self.tokenizer.pad_token is None:
                 self.tokenizer.pad_token = self.tokenizer.eos_token
         except Exception as e:
@@ -78,12 +78,14 @@ class APIModel(APIModelBase):
         print(total_cost)
         
     def evaluate_options(self, dataset: IterableDataset, skip_generation, llm_judge):
+        temp_dir = env.results / 'temp'
+        temp_dir.mkdir(parents=True, exist_ok=True)
         if not skip_generation:
             with tqdm(total=len(dataset), desc='Generating Samples', unit="sample") as pbar:
                 for i in range(0, len(dataset), self.thread_pool.max_workers):
                     batch = dataset[i:i + self.thread_pool.max_workers]
                     self.thread_pool.process_batch(batch, self._generate)
-                    with open(env.results / 'temp/Gen_Temp.pkl', 'wb') as f:
+                    with open(temp_dir / 'Gen_Temp.pkl', 'wb') as f:
                         pickle.dump(dataset, f)
                     pbar.update(len(batch))
 
@@ -93,11 +95,13 @@ class APIModel(APIModelBase):
         dataset.cost()
 
     def judge_answers(self, dataset, llm_judge):
+        temp_dir = env.results / 'temp'
+        temp_dir.mkdir(parents=True, exist_ok=True)
         with tqdm(total=len(dataset), desc='Evaluating Samples', unit="sample") as pbar:
             for i in range(0, len(dataset), self.thread_pool.max_workers):
                 batch = [(sample, llm_judge) for sample in dataset[i:i + self.thread_pool.max_workers]]
                 self.thread_pool.process_batch(batch, lambda args: self._evaluate(*args))
-                with open(env.results / 'temp/Eval_Temp.pkl', 'wb') as f:
+                with open(temp_dir / 'Eval_Temp.pkl', 'wb') as f:
                     pickle.dump(dataset, f)
                 pbar.update(len(batch))
 

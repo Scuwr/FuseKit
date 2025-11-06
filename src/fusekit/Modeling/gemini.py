@@ -124,13 +124,9 @@ class GenericGemini(APIModel):
         self.client = GeminiClientShim(self.api_key)
 
         self.chosen_model = "gemini"
-        eval_prompt_file = env.apikeys / "eval_sys_prompt.txt"
-        self.eval_sys_prompt = (
-            eval_prompt_file.read_text().strip()
-            if eval_prompt_file.exists() else "You are an expert evaluator."
-        )
+        self.eval_sys_prompt = SystemPrompts.eval_sys_prompt
 
-        self.processor = MllamaProcessor.from_pretrained(env.ModelPath.llama3_11b_vision_instruct)
+        self.processor = None
 
     def get_image_contents(self, sample):
         if sample.image_paths is not None:

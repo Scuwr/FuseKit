@@ -37,7 +37,7 @@ class GenericClaude(APIModel):
         # self.chosen_model = "claude"
         self.model_name = None
         self.tile_images=tile_images
-        self.processor = MllamaProcessor.from_pretrained(env.ModelPath.llama3_11b_vision_instruct)
+        self.processor = None
     
     def encode_tile(self, tile, format):
         with io.BytesIO() as output:

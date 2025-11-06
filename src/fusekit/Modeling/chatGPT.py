@@ -30,7 +30,7 @@ class GenericChatGPT(APIModel):
         self.org = APIKeyFile.parse(env.APIKeys.openai_org)
         self.api_key = APIKeyFile.parse(env.APIKeys.openai)
         self.client = OpenAI(api_key=self.api_key, organization=self.org)
-        self.processor = MllamaProcessor.from_pretrained(env.ModelPath.llama3_11b_vision_instruct)
+        self.processor = None
 
         if not self.tile_images:
             print("WARNING: Image tiling has been disabled. To enable set tile_images=True")

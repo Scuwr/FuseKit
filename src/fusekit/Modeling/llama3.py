@@ -82,7 +82,7 @@ class GenericLlama3Vision(CausalModel):
         self.model_name = "GenericLlama3"
         
 
-class Llama3_11b_vision_instruct(GenericLlama3Vision):
+class Llama3_11b_vision(GenericLlama3Vision):
     def __init__(self,
                  config=None,
                  device=None,
@@ -90,7 +90,7 @@ class Llama3_11b_vision_instruct(GenericLlama3Vision):
                  precision=torch.bfloat16,
                  force_sharding=True):
         
-        super().__init__(env.ModelPath.llama3_11b_vision_instruct,
+        super().__init__(env.ModelPath.llama3_11b_vision,
                          config=config,
                          device=device,
                          memory_limit=memory_limit,
