@@ -28,7 +28,7 @@ class GenericClaude(APIModel):
         super().__init__(max_workers=mw, rate_limit=rl, time_window=tw)
         self.input_token_price = input_price
         self.output_token_price = output_price
-        self.org = APIKeyFile.parse(env.APIKeys.claude_org)
+        #self.org = APIKeyFile.parse(env.APIKeys.claude_org)
         self.api_key = APIKeyFile.parse(env.APIKeys.claude)
         self.client = Anthropic(
     api_key=APIKeyFile.parse(env.APIKeys.claude),
