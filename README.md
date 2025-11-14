@@ -16,6 +16,6 @@ A robust transformer model testbench for proprietary and open-source models
     2. *.apikey files should only contain the plaintext key; however, they can use # to comment out entire lines
     3. *.org files re required, but if you an org api key, then leave this file blank
 
-
+# Disclaimer
 For funding acknowledgments and required U.S. Government disclaimers, see:
 [Funding & Disclaimer](./DISCLAIMER.md)
