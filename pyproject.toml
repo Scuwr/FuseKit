@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fusekit"
-version = "0.1.0a2"
+version = "0.1.0a3"
 description = "Composable inference & GPU fusion engine (HF + PEFT)."
 readme = "README.md"
 license = { text = "Apache-2.0" }
@@ -39,3 +39,6 @@ include = ["src/fusekit", "README.md", "LICENSE", "pyproject.toml"]
 
 [project.scripts]
 fusekit = "fusekit.core:cli"
+
+[project.urls]
+Repository = "https://github.com/Scuwr/FuseKit"
