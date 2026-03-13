@@ -228,7 +228,7 @@ class DynamicBatchLoader(object):
                     yield BatchSamples(self.samples, max_new_tokens=max_new_tokens)
                     self.samples = [(sample, subsample_idx)]
                     batch_dims = BatchDimensions()
-                    max_new_tokens = 0
+                    max_new_tokens = sample.max_new_tokens
 
                 # print(f'Batch needs : {new_batch_size}MB')
                 # Some models do not support multimodal batching

@@ -299,6 +299,9 @@ class CausalModel(TrainingMixin, CausalModelBase):
         self.to('cpu')
 
     def load_adapters(self, lora_checkpoints: List[str], composition: Composition = None):
+        if not isinstance(composition, Composition):
+            raise TypeError("composition must be a Composition instance.")
+
         if not isinstance(lora_checkpoints, list):
             lora_checkpoints = [lora_checkpoints]
 
